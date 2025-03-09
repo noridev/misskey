@@ -46,7 +46,7 @@ import XHeader from './_header_.vue';
 import * as os from '@/os.js';
 import { fetchInstance, instance } from '@/instance.js';
 import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
+import { definePageMetadata } from '@/utility/page-metadata.js';
 import MkButton from '@/components/MkButton.vue';
 import MkInput from '@/components/MkInput.vue';
 
@@ -122,7 +122,7 @@ definePageMetadata(() => ({
 	border-radius: 6px;
 
 	&:hover {
-		background: var(--MI_THEME-X5);
+		background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.05));
 	}
 }
 

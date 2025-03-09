@@ -5,15 +5,16 @@
 
 // PIZZAX --- A lightweight store
 
-import { onUnmounted, Ref, ref, watch } from 'vue';
+import { onUnmounted, ref, watch } from 'vue';
 import { BroadcastChannel } from 'broadcast-channel';
+import type { Ref } from 'vue';
 import { $i } from '@/account.js';
-import { misskeyApi } from '@/scripts/misskey-api.js';
-import { get, set } from '@/scripts/idb-proxy.js';
-import { defaultStore } from '@/store.js';
+import { misskeyApi } from '@/utility/misskey-api.js';
+import { get, set } from '@/utility/idb-proxy.js';
+import { store } from '@/store.js';
 import { useStream } from '@/stream.js';
-import { deepClone } from '@/scripts/clone.js';
-import { deepMerge } from '@/scripts/merge.js';
+import { deepClone } from '@/utility/clone.js';
+import { deepMerge } from '@/utility/merge.js';
 
 type StateDef = Record<string, {
 	where: 'account' | 'device' | 'deviceAccount';
@@ -112,7 +113,6 @@ export class Storage<T extends StateDef> {
 				this.reactiveState[k].value = this.state[k] = this.mergeState<T[keyof T]['default']>(deviceAccountState[k], v.default);
 			} else {
 				this.reactiveState[k].value = this.state[k] = v.default;
-				if (_DEV_) console.log('Use default value', k, v.default);
 			}
 		}
 
@@ -148,7 +148,7 @@ export class Storage<T extends StateDef> {
 			if ($i) {
 				// api関数と循環参照なので一応setTimeoutしておく
 				window.setTimeout(async () => {
-					await defaultStore.ready;
+					await store.ready;
 
 					misskeyApi('i/registry/get-all', { scope: ['client', this.key] })
 						.then(kvs => {
@@ -179,12 +179,9 @@ export class Storage<T extends StateDef> {
 		// (JSON.parse(JSON.stringify(value))の代わり)
 		const rawValue = deepClone(value);
 
-		if (_DEV_) console.log('set', key, rawValue, value);
-
 		this.reactiveState[key].value = this.state[key] = rawValue;
 
 		return this.addIdbSetJob(async () => {
-			if (_DEV_) console.log(`set ${String(key)} start`);
 			switch (this.def[key].where) {
 				case 'device': {
 					this.pizzaxChannel.postMessage({
@@ -223,7 +220,6 @@ export class Storage<T extends StateDef> {
 					break;
 				}
 			}
-			if (_DEV_) console.log(`set ${String(key)} complete`);
 		});
 	}
 
@@ -241,14 +237,15 @@ export class Storage<T extends StateDef> {
 	 * 特定のキーの、簡易的なgetter/setterを作ります
 	 * 主にvue上で設定コントロールのmodelとして使う用
 	 */
+	// TODO: 廃止
 	public makeGetterSetter<K extends keyof T, R = T[K]['default']>(
 		key: K,
 		getter?: (v: T[K]['default']) => R,
 		setter?: (v: R) => T[K]['default'],
 	): {
-		get: () => R;
-		set: (value: R) => void;
-	} {
+			get: () => R;
+			set: (value: R) => void;
+		} {
 		const valueRef = ref(this.state[key]);
 
 		const stop = watch(this.reactiveState[key], val => {

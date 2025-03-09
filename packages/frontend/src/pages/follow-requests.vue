@@ -46,12 +46,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import * as Misskey from 'misskey-js';
 import { shallowRef, computed, ref } from 'vue';
-import MkPagination, { type Paging } from '@/components/MkPagination.vue';
+import MkPagination from '@/components/MkPagination.vue';
+import type { Paging } from '@/components/MkPagination.vue';
 import MkButton from '@/components/MkButton.vue';
 import { userPage, acct } from '@/filters/user.js';
 import * as os from '@/os.js';
 import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
+import { definePageMetadata } from '@/utility/page-metadata.js';
 import { infoImageUrl } from '@/instance.js';
 import { $i } from '@/account.js';
 import MkHorizontalSwipe from '@/components/MkHorizontalSwipe.vue';

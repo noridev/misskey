@@ -63,16 +63,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { shallowRef, computed } from 'vue';
-import XNotificationConfig, { type NotificationConfig } from './notifications.notification-config.vue';
+import XNotificationConfig from './notifications.notification-config.vue';
+import type { NotificationConfig } from './notifications.notification-config.vue';
 import FormLink from '@/components/form/link.vue';
 import FormSection from '@/components/form/section.vue';
 import MkFolder from '@/components/MkFolder.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import * as os from '@/os.js';
 import { signinRequired } from '@/account.js';
-import { misskeyApi } from '@/scripts/misskey-api.js';
+import { misskeyApi } from '@/utility/misskey-api.js';
 import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
+import { definePageMetadata } from '@/utility/page-metadata.js';
 import MkPushNotificationAllowButton from '@/components/MkPushNotificationAllowButton.vue';
 import { notificationTypes } from '@@/js/const.js';
 
@@ -80,7 +81,7 @@ const $i = signinRequired();
 
 const nonConfigurableNotificationTypes = ['note', 'roleAssigned', 'followRequestAccepted', 'test', 'exportCompleted'] satisfies (typeof notificationTypes[number])[] as string[];
 
-const onlyOnOrOffNotificationTypes = ['app', 'achievementEarned', 'login'] satisfies (typeof notificationTypes[number])[] as string[];
+const onlyOnOrOffNotificationTypes = ['app', 'achievementEarned', 'login', 'createToken'] satisfies (typeof notificationTypes[number])[] as string[];
 
 const allowButton = shallowRef<InstanceType<typeof MkPushNotificationAllowButton>>();
 const pushRegistrationInServer = computed(() => allowButton.value?.pushRegistrationInServer);
