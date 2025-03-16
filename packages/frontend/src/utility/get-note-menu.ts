@@ -9,7 +9,7 @@ import { url } from '@@/js/config.js';
 import { claimAchievement } from './achievements.js';
 import type { Ref, ShallowRef } from 'vue';
 import type { MenuItem } from '@/types/menu.js';
-import { $i } from '@/account.js';
+import { $i } from '@/i.js';
 import { i18n } from '@/i18n.js';
 import { instance } from '@/instance.js';
 import * as os from '@/os.js';
@@ -24,7 +24,7 @@ import { isSupportShare } from '@/utility/navigator.js';
 import { getAppearNote } from '@/utility/get-appear-note.js';
 import { genEmbedCode } from '@/utility/get-embed-code.js';
 import { prefer } from '@/preferences.js';
-import { noteActions } from '@/plugin.js';
+import { getPluginHandlers } from '@/plugin.js';
 
 export async function getNoteClipMenu(props: {
 	note: Misskey.entities.Note;
@@ -157,7 +157,6 @@ export function getCopyNoteLinkMenu(note: Misskey.entities.Note, text: string): 
 		text,
 		action: (): void => {
 			copyToClipboard(`${url}/notes/${note.id}`);
-			os.success();
 		},
 	};
 }
@@ -237,7 +236,6 @@ export function getNoteMenu(props: {
 
 	function copyContent(): void {
 		copyToClipboard(appearNote.text);
-		os.success();
 	}
 
 	function togglePin(pin: boolean): void {
@@ -324,7 +322,6 @@ export function getNoteMenu(props: {
 				text: i18n.ts.copyRemoteLink,
 				action: () => {
 					copyToClipboard(appearNote.url ?? appearNote.uri);
-					os.success();
 				},
 			}, {
 				icon: 'ti ti-external-link',
@@ -483,7 +480,6 @@ export function getNoteMenu(props: {
 				text: i18n.ts.copyRemoteLink,
 				action: () => {
 					copyToClipboard(appearNote.url ?? appearNote.uri);
-					os.success();
 				},
 			}, {
 				icon: 'ti ti-external-link',
@@ -497,6 +493,7 @@ export function getNoteMenu(props: {
 		}
 	}
 
+	const noteActions = getPluginHandlers('note_action');
 	if (noteActions.length > 0) {
 		menuItems.push({ type: 'divider' });
 
@@ -511,11 +508,10 @@ export function getNoteMenu(props: {
 
 	if (prefer.s.devMode) {
 		menuItems.push({ type: 'divider' }, {
-			icon: 'ti ti-id',
+			icon: 'ti ti-hash',
 			text: i18n.ts.copyNoteId,
 			action: () => {
 				copyToClipboard(appearNote.id);
-				os.success();
 			},
 		});
 	}
@@ -607,8 +603,8 @@ export function getRenoteMenu(props: {
 					});
 				}
 
-				const configuredVisibility = prefer.s.rememberNoteVisibility ? store.state.visibility : prefer.s.defaultNoteVisibility;
-				const localOnly = prefer.s.rememberNoteVisibility ? store.state.localOnly : prefer.s.defaultNoteLocalOnly;
+				const configuredVisibility = prefer.s.rememberNoteVisibility ? store.s.visibility : prefer.s.defaultNoteVisibility;
+				const localOnly = prefer.s.rememberNoteVisibility ? store.s.localOnly : prefer.s.defaultNoteLocalOnly;
 
 				let visibility = appearNote.visibility;
 				visibility = smallerVisibility(visibility, configuredVisibility);
