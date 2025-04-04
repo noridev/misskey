@@ -5,9 +5,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div class="_gaps">
-	<MkButton primary gradate rounded :class="$style.start" @click="start"><i class="ti ti-plus"></i> {{ i18n.ts.startChat }}</MkButton>
+	<MkButton v-if="$i.policies.canChat" primary gradate rounded :class="$style.start" @click="start"><i class="ti ti-plus"></i> {{ i18n.ts.startChat }}</MkButton>
 
-	<MkAd :prefer="['horizontal', 'horizontal-big']"/>
+	<MkInfo v-else>{{ i18n.ts._chat.chatNotAvailableForThisAccountOrServer }}</MkInfo>
+
+	<MkAd :preferForms="['horizontal', 'horizontal-big']"/>
 
 	<MkInput
 		v-model="searchQuery"
@@ -65,7 +67,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, onActivated, onDeactivated, onMounted, ref } from 'vue';
+import { onActivated, onDeactivated, onMounted, ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import { useInterval } from '@@/js/use-interval.js';
 import XMessage from './XMessage.vue';
@@ -78,6 +80,7 @@ import * as os from '@/os.js';
 import { updateCurrentAccountPartial } from '@/accounts.js';
 import MkInput from '@/components/MkInput.vue';
 import MkFoldableSection from '@/components/MkFoldableSection.vue';
+import MkInfo from '@/components/MkInfo.vue';
 
 const $i = ensureSignin();
 
@@ -116,7 +119,8 @@ function start(ev: MouseEvent) {
 }
 
 async function startUser() {
-	os.selectUser().then(user => {
+	// TODO: localOnly は連合に対応したら消す
+	os.selectUser({ localOnly: true }).then(user => {
 		router.push(`/chat/user/${user.id}`);
 	});
 }
@@ -159,7 +163,7 @@ async function fetchHistory() {
 		.map(m => ({
 			id: m.id,
 			message: m,
-			other: m.room == null ? (m.fromUserId === $i.id ? m.toUser : m.fromUser) : null,
+			other: (!('room' in m) || m.room == null) ? (m.fromUserId === $i.id ? m.toUser : m.fromUser) : null,
 			isMe: m.fromUserId === $i.id,
 		}));
 
