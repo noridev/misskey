@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <div ref="rootEl" class="_pageScrollable">
 	<MkStickyContainer>
-		<template #header><MkPageHeader v-model:tab="src" :actions="headerActions" :tabs="$i ? headerTabs : headerTabsWhenNotLogin"/></template>
+		<template #header><MkPageHeader v-model:tab="src" :displayMyAvatar="true" :actions="headerActions" :tabs="$i ? headerTabs : headerTabsWhenNotLogin"/></template>
 		<MkSpacer :contentMax="800">
 			<MkInfo v-if="isBasicTimeline(src) && !store.r.timelineTutorials.value[src]" style="margin-bottom: var(--MI-margin);" closable @close="closeTutorial()">
 				{{ i18n.ts._timelineDescription[src] }}
@@ -52,11 +52,14 @@ import { miLocalStorage } from '@/local-storage.js';
 import { availableBasicTimelines, hasWithReplies, isAvailableBasicTimeline, isBasicTimeline, basicTimelineIconClass } from '@/timelines.js';
 import { prefer } from '@/preferences.js';
 import { useRouter } from '@/router.js';
+import { useScrollPositionKeeper } from '@/use/use-scroll-position-keeper.js';
 
 provide('shouldOmitHeaderTitle', true);
 
 const tlComponent = useTemplateRef('tlComponent');
 const rootEl = useTemplateRef('rootEl');
+
+useScrollPositionKeeper(rootEl);
 
 const router = useRouter();
 router.useListener('same', () => {

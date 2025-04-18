@@ -4899,7 +4899,7 @@ export type components = {
       /** @default false */
       notify: boolean;
       /** @default false */
-      hideNotesInSensitiveChannel: boolean;
+      excludeNotesInSensitiveChannel: boolean;
     };
     Clip: {
       /**
@@ -5179,7 +5179,8 @@ export type components = {
       canImportFollowing: boolean;
       canImportMuting: boolean;
       canImportUserLists: boolean;
-      canChat: boolean;
+      /** @enum {string} */
+      chatAvailability: 'available' | 'readonly' | 'unavailable';
     };
     ReversiGameLite: {
       /** Format: id */
@@ -8804,6 +8805,16 @@ export type operations = {
    * **Credential required**: *Yes* / **Permission**: *write:admin:queue*
    */
   admin___queue___clear: {
+    requestBody: {
+      content: {
+        'application/json': {
+          /** @enum {string} */
+          type: 'system' | 'endedPollNotification' | 'deliver' | 'inbox' | 'db' | 'relationship' | 'objectStorage' | 'userWebhookDeliver' | 'systemWebhookDeliver';
+          /** @enum {string} */
+          state: '*' | 'wait' | 'delayed';
+        };
+      };
+    };
     responses: {
       /** @description OK (without any results) */
       204: {
@@ -11339,7 +11350,7 @@ export type operations = {
           excludeBots?: boolean;
           withReplies: boolean;
           withFile: boolean;
-          hideNotesInSensitiveChannel?: boolean;
+          excludeNotesInSensitiveChannel?: boolean;
         };
       };
     };
@@ -11621,7 +11632,7 @@ export type operations = {
           excludeBots?: boolean;
           withReplies?: boolean;
           withFile?: boolean;
-          hideNotesInSensitiveChannel?: boolean;
+          excludeNotesInSensitiveChannel?: boolean;
         };
       };
     };

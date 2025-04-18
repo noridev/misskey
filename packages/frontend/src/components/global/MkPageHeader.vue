@@ -69,7 +69,7 @@ const emit = defineEmits<{
 }>();
 
 //const viewId = inject(DI.viewId);
-const injectedPageMetadata = inject(DI.pageMetadata);
+const injectedPageMetadata = inject(DI.pageMetadata, ref(null));
 const pageMetadata = computed(() => props.overridePageMetadata ?? injectedPageMetadata.value);
 
 const hideTitle = computed(() => inject('shouldOmitHeaderTitle', false) || props.hideTitle);
@@ -124,11 +124,18 @@ onUnmounted(() => {
 
 <style lang="scss" module>
 .root {
-	background: color(from var(--MI_THEME-bg) srgb r g b / 0.75);
+	background: color(from var(--MI_THEME-pageHeaderBg) srgb r g b / 0.75);
 	-webkit-backdrop-filter: var(--MI-blur, blur(15px));
 	backdrop-filter: var(--MI-blur, blur(15px));
-	border-bottom: solid 0.5px var(--MI_THEME-divider);
+	border-bottom: solid 0.5px transparent;
 	width: 100%;
+	color: var(--MI_THEME-pageHeaderFg);
+}
+
+@container style(--MI_THEME-pageHeaderBg: var(--MI_THEME-bg)) {
+	.root {
+		border-bottom: solid 0.5px var(--MI_THEME-divider);
+	}
 }
 
 .upper,
