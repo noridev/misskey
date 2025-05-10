@@ -35,6 +35,10 @@ export const store = markRaw(new Pizzax('base', {
 		where: 'account',
 		default: false,
 	},
+	readDriveTip: {
+		where: 'account',
+		default: false,
+	},
 	memo: {
 		where: 'account',
 		default: null,
@@ -75,6 +79,10 @@ export const store = markRaw(new Pizzax('base', {
 	darkMode: {
 		where: 'device',
 		default: false,
+	},
+	realtimeMode: {
+		where: 'device',
+		default: true,
 	},
 	recentlyUsedEmojis: {
 		where: 'device',
@@ -371,10 +379,6 @@ export const store = markRaw(new Pizzax('base', {
 		default: true,
 	},
 	keepScreenOn: {
-		where: 'device',
-		default: false,
-	},
-	disableStreamingTimeline: {
 		where: 'device',
 		default: false,
 	},
